@@ -48,7 +48,7 @@ def publish(client, data):
     result = client.publish("testTopic", data, 0)
     status = result[0]
     if status == 0:
-        print(f"Send message")
+        print(f"Sent message")
     else:
         print(f"Failed to send message")
 
