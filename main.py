@@ -21,12 +21,17 @@ def video_capture(client):
     cap.release()
 
 def image_capture(client):
-    picam = Picamera2()
-    picam.capture_file("test.jpg")
-    f = open("test.jpg")
-    fileContent = f.read()
-    byteArr = bytearray(fileContent)
-    publish(client, byteArr)
+#    picam = Picamera2()
+ #   picam.capture_file("test.jpg")
+  #  print("saved file")
+#    f = open("test.jpg", "wb")
+ #   fileContent = f.read()
+  #  byteArr = bytearray(fileContent)
+    with open("./test.jpg",'rb') as file:
+        filecontent = file.read()
+        byteArr = bytearray(filecontent)
+        publish(client, byteArr)
+    print("Published file")
 
 def connect_mqtt():
     def on_connect(client, userdata, flags, rc):
@@ -50,6 +55,7 @@ def publish(client, data):
 def run():
     client = connect_mqtt()
     client.loop_start()
+    publish(client, "Test message to confirm publishing is working")
     image_capture(client)
 
 if __name__ == '__main__':
