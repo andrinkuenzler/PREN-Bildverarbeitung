@@ -1,45 +1,47 @@
 import cv2
-import numpy as np
-from time import time
-from windowcapture import WindowCapture
+from paho.mqtt import client as mqtt_client
 
-# Load trained model
-pet_cascade = cv2.CascadeClassifier('Testaufbau/PET/cascade/cascade.xml')
-kronkorken_cascade = cv2.CascadeClassifier('Testaufbau/Kronkorken/cascade/cascade.xml')
-
-cap = cv2.VideoCapture(0)
-if cap.isOpened() == False:
-    print("Error in opening video stream or file")
-while(cap.isOpened()):
-    ret, frame = cap.read()
-    
-    # Convert video to gray
-    gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-    # Start object detection for PET
-    pet_detected = pet_cascade.detectMultiScale(gray, 1.3, 5)
-    # Draw rectangles
-    for (x, y, w, h) in pet_detected:
-        cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 1)
-
-    # Start object detection for Kronkorken
-    kronkorken_detected = kronkorken_cascade.detectMultiScale(gray, 1.3, 5)
-    # Draw rectangles
-    for (x, y, w, h) in kronkorken_detected:
-        cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 0, 255), 1)
-
-    if ret:
-        # Display the resulting frame
-        cv2.imshow('Frame',frame)
-        # Press esc to exit
-        if cv2.waitKey(1) & 0xFF == 27:
-            break
-        # Press p to save screenshot in positive folder
-        elif cv2.waitKey(1) == ord('p'):
-            cv2.imwrite('Testaufbau/positive/{}.jpg'.format(time()), WindowCapture('Frame').get_screenshot())
-        # Press n to save screenshot in negative folder
-        elif cv2.waitKey(1) == ord('n'):
-            cv2.imwrite('Testaufbau/negative/{}.jpg'.format(time()), WindowCapture('Frame').get_screenshot())
+def video_capture(client):
+    cap = cv2.VideoCapture(0)
+    if cap.isOpened() == False:
+        print("Error in opening video stream or file")
     else:
-        break
-cap.release()
-cv2.destroyAllWindows()
+        ret, frame = cap.read()
+        cv2.imwrite('images/c1.png',frame)
+        fileContent = frame.read()
+        byteArr = bytearray(fileContent)
+        publish(client, byteArr)
+    while(cap.isOpened()):
+        ret, frame = cap.read()
+        if ret:
+            publish(client, frame, 0)
+        else:
+            break
+    cap.release()
+
+def connect_mqtt():
+    def on_connect(client, userdata, flags, rc):
+        if rc == 0:
+            print("Connected to MQTT Broker!")
+        else:
+            print("Failed to connect, return code %d\n", rc)
+    client = mqtt_client.Client("RasPi-Bilderkennung")
+    client.on_connect = on_connect
+    client.connect("prenf23-banthama.el.eee.intern", 1883)
+    return client
+
+def publish(client, data):
+    result = client.publish("testTopic", data, 0)
+    status = result[0]
+    if status == 0:
+        print(f"Send message")
+    else:
+        print(f"Failed to send message")
+
+def run():
+    client = connect_mqtt()
+    client.loop_start()
+    video_capture(client)
+
+if __name__ == '__main__':
+    run()
