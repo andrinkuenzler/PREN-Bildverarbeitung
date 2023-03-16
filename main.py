@@ -1,4 +1,5 @@
 import cv2
+import time
 from paho.mqtt import client as mqtt_client
 from picamera2 import Picamera2
 
@@ -21,17 +22,18 @@ def video_capture(client):
     cap.release()
 
 def image_capture(client):
-#    picam = Picamera2()
- #   picam.capture_file("test.jpg")
-  #  print("saved file")
-#    f = open("test.jpg", "wb")
- #   fileContent = f.read()
-  #  byteArr = bytearray(fileContent)
-    with open("./test.jpg",'rb') as file:
+    picam = Picamera2()
+    camera_config = picam.create_still_configuration(main={"size": (1920, 1080)}, lores={"size": (640, 480)}, display="lores")
+    picam.configure(camera_config)
+    picam.start()
+    time.sleep(2)
+    picam.capture_file("image_pi.jpg")
+    print("Saved file (pi)")
+    with open("./image_pi.jpg",'rb') as file:
         filecontent = file.read()
         byteArr = bytearray(filecontent)
         publish(client, byteArr)
-    print("Published file")
+    print("Published file (pi)")
 
 def connect_mqtt():
     def on_connect(client, userdata, flags, rc):
@@ -48,9 +50,9 @@ def publish(client, data):
     result = client.publish("testTopic", data, 0)
     status = result[0]
     if status == 0:
-        print(f"Sent message")
+        print("Sent message")
     else:
-        print(f"Failed to send message")
+        print("Failed to send message")
 
 def run():
     client = connect_mqtt()
