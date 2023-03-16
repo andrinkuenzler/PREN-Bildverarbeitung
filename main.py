@@ -55,7 +55,6 @@ def publish(client, data):
 def run():
     client = connect_mqtt()
     client.loop_start()
-    publish(client, "Test message to confirm publishing is working")
     image_capture(client)
 
 if __name__ == '__main__':
