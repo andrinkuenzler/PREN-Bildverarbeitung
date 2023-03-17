@@ -1,3 +1,6 @@
+# To be run on the Raspberry Pi
+# Captures an Image and saves it to the working directory
+
 import cv2
 import time
 from picamera2 import Picamera2

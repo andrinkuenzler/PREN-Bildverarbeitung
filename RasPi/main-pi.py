@@ -1,25 +1,9 @@
-import cv2
+# To be run on the Raspberry Pi
+# Captures an Image, saves it to the working directory and publishes it to the mqtt-Broker
+
 import time
 from paho.mqtt import client as mqtt_client
 from picamera2 import Picamera2
-
-def video_capture(client):
-    cap = cv2.VideoCapture(0)
-    if cap.isOpened() == False:
-        print("Error in opening video stream or file")
-    else:
-        ret, frame = cap.read()
-        cv2.imwrite('images/c1.png',frame)
-        fileContent = frame.read()
-        byteArr = bytearray(fileContent)
-        publish(client, byteArr)
-    while(cap.isOpened()):
-        ret, frame = cap.read()
-        if ret:
-            publish(client, frame, 0)
-        else:
-            break
-    cap.release()
 
 def image_capture(client):
     picam = Picamera2()
@@ -47,7 +31,7 @@ def connect_mqtt():
     return client
 
 def publish(client, data):
-    result = client.publish("testTopic", data, 0)
+    result = client.publish("test/image/raw", data, 0)
     status = result[0]
     if status == 0:
         print("Sent message")
