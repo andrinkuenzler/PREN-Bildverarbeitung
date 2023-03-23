@@ -17,12 +17,12 @@ def connect_mqtt():
     return client
 
 def image_capture(client):
+    picam = Picamera2()
+    camera_config = picam.create_still_configuration(main={"size": (1920, 1080)}, lores={"size": (640, 480)}, display="lores")
+    picam.configure(camera_config)
+    picam.start()
+    time.sleep(2)
     while True:
-        picam = Picamera2()
-        camera_config = picam.create_still_configuration(main={"size": (1920, 1080)}, lores={"size": (640, 480)}, display="lores")
-        picam.configure(camera_config)
-        picam.start()
-        time.sleep(2)
         picam.capture_file("dummyImage.jpg")
         print("Saved file (pi)")
         with open("./dummyImage.jpg",'rb') as file:
