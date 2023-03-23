@@ -16,7 +16,7 @@ def image_capture(client):
     with open("./image_pi.jpg",'rb') as file:
         filecontent = file.read()
         byteArr = bytearray(filecontent)
-        publish(client, byteArr)
+        publish(client, byteArr, "test/image/raw")
     print("Published file (pi)")
 
 def connect_mqtt():
@@ -30,8 +30,8 @@ def connect_mqtt():
     client.connect("prenf23-banthama.el.eee.intern", 1883)
     return client
 
-def publish(client, data):
-    result = client.publish("test/image/raw", data, 0)
+def publish(client, data, topic):
+    result = client.publish(topic, data, 0) #changed to param
     status = result[0]
     if status == 0:
         print("Sent message")
@@ -41,6 +41,7 @@ def publish(client, data):
 def run():
     client = connect_mqtt()
     client.loop_start()
+    time.sleep(5) #testing purpose
     image_capture(client)
 
 if __name__ == '__main__':
