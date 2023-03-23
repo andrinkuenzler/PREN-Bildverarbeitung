@@ -24,24 +24,30 @@ def subscribe(client, topic):
     else:
         print("Failed to subscribe")
 
-def convert_image(client):
-    with open("./dummyImage.jpg",'rb') as file:
-        filecontent = file.read()
-        byteArr = bytearray(filecontent)
-        publish(client, byteArr, "test/image/raw")
-    print("Published image (raw)")
-
 def on_message(client, userdata, message):
     print ("Raw image received")
-    process_image(client, message)
+    convert_image_raw(client, message)
 
-def process_image(client, message):
-    f = open("./dummyImageReceived.jpg", 'wb')
+# Convert from byteArray to Image
+def convert_image_raw(client, message):
+    f = open("./rawImage.jpg", 'wb')
     f.write(message.payload)
     f.close()
     print ("image received")
-    #publish(client, message.payload, "test/image/processed")
 
+# Process Image with OpenCV and send to convert_imgae to publish
+def obect_recognition(client, message):
+    print()
+
+# Convert from image to byteArray
+def convert_image_processed(client, topic):
+    with open("./processedImage.jpg",'rb') as file:
+        filecontent = file.read()
+        byteArr = bytearray(filecontent)
+        publish(client, byteArr, topic)
+    print("Published image (raw)")
+
+# Publish byteArray
 def publish(client, data, topic):
     result = client.publish(topic, data, 0)
     status = result[0]
@@ -54,8 +60,6 @@ def run():
     client = connect_mqtt()
     client.loop_start()
     subscribe(client, "test/image/raw")
-    time.sleep(5)
-    convert_image(client)
 
 if __name__ == '__main__':
     run()

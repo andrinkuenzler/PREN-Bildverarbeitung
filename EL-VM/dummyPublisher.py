@@ -1,9 +1,8 @@
-# To be run on the Raspberry Pi
-# Captures an Image, saves it to the working directory and publishes it to the mqtt-Broker
+# To be run on the VM
+# Converts dummy image and publishes it
 
 import time
 from paho.mqtt import client as mqtt_client
-from picamera2 import Picamera2
 
 def connect_mqtt():
     def on_connect(client, userdata, flags, rc):
@@ -11,20 +10,13 @@ def connect_mqtt():
             print("Connected to MQTT Broker!")
         else:
             print("Failed to connect, return code %d\n", rc)
-    client = mqtt_client.Client("RasPi-Bilderkennung")
+    client = mqtt_client.Client("VM-Bilderkennung")
     client.on_connect = on_connect
-    client.connect("prenf23-banthama.el.eee.intern", 1883)
+    client.connect("localhost", 1883)
     return client
 
-def image_capture(client):
-    picam = Picamera2()
-    camera_config = picam.create_still_configuration(main={"size": (1920, 1080)}, lores={"size": (640, 480)}, display="lores")
-    picam.configure(camera_config)
-    picam.start()
-    time.sleep(2)
+def convert_image(client):
     while True:
-        picam.capture_file("dummyImage.jpg")
-        print("Saved file (pi)")
         with open("./dummyImage.jpg",'rb') as file:
             filecontent = file.read()
             byteArr = bytearray(filecontent)
@@ -43,7 +35,7 @@ def publish(client, data, topic):
 def run():
     client = connect_mqtt()
     client.loop_start()
-    image_capture(client)
+    convert_image(client)
 
 if __name__ == '__main__':
     run()
