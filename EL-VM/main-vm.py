@@ -36,7 +36,7 @@ def convert_image_raw(client, message):
     print ("image received")
 
 # Process Image with OpenCV and send to convert_imgae to publish
-def obect_recognition(client, message):
+def obect_recognition(client):
     print()
 
 # Convert from image to byteArray
