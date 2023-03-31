@@ -2,7 +2,10 @@
 # Converts, publishes, reverts and saves dummy image
 
 import time
+import cv2
+import numpy as np
 from paho.mqtt import client as mqtt_client
+from keras.models import load_model
 
 def connect_mqtt():
     def on_connect(client, userdata, flags, rc):
@@ -24,6 +27,7 @@ def subscribe(client, topic):
     else:
         print("Failed to subscribe")
 
+# Callback function
 def on_message(client, userdata, message):
     print ("Raw image received")
     convert_image_raw(client, message)
@@ -35,9 +39,33 @@ def convert_image_raw(client, message):
     f.close()
     print ("image received")
 
-# Process Image with OpenCV and send to convert_imgae to publish
-def obect_recognition(client):
-    print()
+
+# Process Image with OpenCV and send to convert_image to publish
+def object_recognition(client):
+    # Disable scientific notation for clarity
+    np.set_printoptions(suppress=True)
+    # Load the model
+    model = load_model("keras_Model.h5", compile=False)
+    # Load the labels
+    class_names = open("labels.txt", "r").readlines()
+    # Grab the webcamera's image.
+    image = "./rawImage.jpg"
+    # Resize the raw image into (224-height,224-width) pixels
+    image = cv2.resize(image, (224, 224), interpolation=cv2.INTER_AREA)
+    # Make the image a numpy array and reshape it to the models input shape.
+    image = np.asarray(image, dtype=np.float32).reshape(1, 224, 224, 3)
+    # Normalize the image array
+    image = (image / 127.5) - 1
+    # Predicts the model
+    prediction = model.predict(image)
+    index = np.argmax(prediction)
+    class_name = class_names[index]
+    confidence_score = prediction[0][index]
+    if (str(np.round(confidence_score * 100))[:-2] >= 75):
+        convert_image_processed(client, "test/image/processed/hit")
+    else:
+        convert_image_processed(client, "test/image/processed/noHit")
+
 
 # Convert from image to byteArray
 def convert_image_processed(client, topic):
