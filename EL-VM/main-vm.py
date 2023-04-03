@@ -57,7 +57,7 @@ def object_recognition(client):
     # Disable scientific notation for clarity
     np.set_printoptions(suppress=True)
     # Load the model
-    model = load_model("./converted_keras/keras_Model.h5", compile=False)
+    model = load_model("./converted_keras/keras_model.h5", compile=False)
     # Load the labels
     class_names = open("./converted_keras/labels.txt", "r").readlines()
     # Grab the webcamera's image.
