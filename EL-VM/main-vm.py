@@ -61,7 +61,7 @@ def object_recognition(client):
     # Load the labels
     class_names = open("./converted_keras/labels.txt", "r").readlines()
     # Grab the webcamera's image.
-    cv2.imread("./images/schluessel2.webp")
+    image = cv2.imread("./images/schluessel2.webp")
     # Resize the raw image into (224-height,224-width) pixels
     image = cv2.resize(image, (224, 224), interpolation=cv2.INTER_AREA)
     # Make the image a numpy array and reshape it to the models input shape.
