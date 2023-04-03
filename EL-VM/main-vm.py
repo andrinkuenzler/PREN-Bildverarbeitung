@@ -25,9 +25,9 @@ def connect_mqtt():
     return client
 
 def subscribe(client: mqtt_client):
-    def on_message(client, userdata, msg):
-        print("Received `{msg.payload.decode()}` from `{msg.topic}` topic")
-        print(msg.payload)
+    def on_message(client, userdata, message):
+        print ("Raw image received")
+        convert_image_raw(client, message)
     client.subscribe(topic)
     client.on_message = on_message
 
@@ -42,11 +42,6 @@ def subscribe(client: mqtt_client):
 #         #print("Subscribed")
 #     #else:
 #         #print("Failed to subscribe")
-
-# Callback function
-def on_messagde(client, userdata, message):
-    print ("Raw image received")
-    convert_image_raw(client, message)
 
 # Convert from byteArray to Image
 def convert_image_raw(client, message):
