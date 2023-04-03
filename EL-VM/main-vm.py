@@ -1,11 +1,16 @@
 # To be run on the VM
 # Converts, publishes, reverts and saves dummy image
 
+import random
 import time
 import cv2
 import numpy as np
 from paho.mqtt import client as mqtt_client
 from keras.models import load_model
+
+port = 1883
+topic = "test/image/raw"
+client_id = f'python-mqtt-{random.randint(0, 100)}'
 
 def connect_mqtt():
     def on_connect(client, userdata, flags, rc):
@@ -13,28 +18,40 @@ def connect_mqtt():
             print("Connected to MQTT Broker!")
         else:
             print("Failed to connect, return code %d\n", rc)
-    client = mqtt_client.Client("VM-Bilderkennung")
+    client = mqtt_client.Client(client_id)
     client.on_connect = on_connect
-    client.on_message = on_message
-    client.connect("localhost", 1883)
+    #client.on_message = on_message
+    client.connect("localhost", port)
     return client
 
-def subscribe(client, topic):
-    result = client.subscribe(topic)
-    status = result[0]
-    if status == 0:
-        print("Subscribed")
-    else:
-        print("Failed to subscribe")
+def subscribe(client: mqtt_client):
+    def on_message(client, userdata, msg):
+        print("Received `{msg.payload.decode()}` from `{msg.topic}` topic")
+        print(msg.payload)
+    client.subscribe(topic)
+    client.on_message = on_message
+
+# def subscribeX(client, topic):
+#     def on_message(client, userdata, msg):
+#         print(f"Received `{msg.payload.decode()}` from `{msg.topic}` topic")
+#     client.subscribe(topic)
+#     client.on_message = on_message
+#     #result = client.subscribe(topic)
+#     #status = result[0]
+#     #if status == 0:
+#         #print("Subscribed")
+#     #else:
+#         #print("Failed to subscribe")
 
 # Callback function
-def on_message(client, userdata, message):
+def on_messagde(client, userdata, message):
     print ("Raw image received")
     convert_image_raw(client, message)
 
 # Convert from byteArray to Image
 def convert_image_raw(client, message):
     f = open("./rawImage.jpg", 'wb')
+    f.write(message.payload)
     f.write(message.payload)
     f.close()
     print ("image received")
@@ -86,11 +103,8 @@ def publish(client, data, topic):
 
 def run():
     client = connect_mqtt()
-    client.loop_start()
-    subscribe(client, "test/image/raw")
+    subscribe(client)
+    client.loop_forever()
 
 if __name__ == '__main__':
     run()
-
-while True:
-    time.sleep(1)
