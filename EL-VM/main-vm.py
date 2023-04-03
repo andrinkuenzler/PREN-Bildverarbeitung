@@ -50,18 +50,18 @@ def convert_image_raw(client, message):
     f.write(message.payload)
     f.close()
     print ("image received")
-
+    object_recognition(client)
 
 # Process Image with OpenCV and send to convert_image to publish
 def object_recognition(client):
     # Disable scientific notation for clarity
     np.set_printoptions(suppress=True)
     # Load the model
-    model = load_model("keras_Model.h5", compile=False)
+    model = load_model("./converted_keras/keras_Model.h5", compile=False)
     # Load the labels
-    class_names = open("labels.txt", "r").readlines()
+    class_names = open("./converted_keras/labels.txt", "r").readlines()
     # Grab the webcamera's image.
-    image = "./rawImage.jpg"
+    cv2.imread("./images/schluessel2.webp")
     # Resize the raw image into (224-height,224-width) pixels
     image = cv2.resize(image, (224, 224), interpolation=cv2.INTER_AREA)
     # Make the image a numpy array and reshape it to the models input shape.
@@ -73,10 +73,14 @@ def object_recognition(client):
     index = np.argmax(prediction)
     class_name = class_names[index]
     confidence_score = prediction[0][index]
-    if (str(np.round(confidence_score * 100))[:-2] >= 75):
-        convert_image_processed(client, "test/image/processed/hit")
-    else:
-        convert_image_processed(client, "test/image/processed/noHit")
+
+    print("Class:", class_name[2:], end="")
+    print("Confidence Score:", str(np.round(confidence_score * 100))[:-2], "%")
+
+    # if (str(np.round(confidence_score * 100))[:-2] >= 75):
+    #     convert_image_processed(client, "test/image/processed/hit")
+    # else:
+    #     convert_image_processed(client, "test/image/processed/noHit")
 
 
 # Convert from image to byteArray
