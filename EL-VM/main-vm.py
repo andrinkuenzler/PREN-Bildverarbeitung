@@ -77,7 +77,7 @@ def object_recognition(client):
     print("Class:", class_name[2:], end="")
     print("Confidence Score:", str(np.round(confidence_score * 100))[:-2], "%")
 
-    if (str(np.round(confidence_score * 100))[:-2] >= 75):
+    if (np.round(confidence_score * 100)[:-2] >= 75):
         convert_image_processed(client, "test/image/processed/hit")
     else:
         convert_image_processed(client, "test/image/processed/noHit")
