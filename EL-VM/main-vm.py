@@ -77,15 +77,15 @@ def object_recognition(client):
     print("Class:", class_name[2:], end="")
     print("Confidence Score:", str(np.round(confidence_score * 100))[:-2], "%")
 
-    # if (str(np.round(confidence_score * 100))[:-2] >= 75):
-    #     convert_image_processed(client, "test/image/processed/hit")
-    # else:
-    #     convert_image_processed(client, "test/image/processed/noHit")
+    if (str(np.round(confidence_score * 100))[:-2] >= 75):
+        convert_image_processed(client, "test/image/processed/hit")
+    else:
+        convert_image_processed(client, "test/image/processed/noHit")
 
 
 # Convert from image to byteArray
 def convert_image_processed(client, topic):
-    with open("./processedImage.jpg",'rb') as file:
+    with open("./rawImage.jpg",'rb') as file:
         filecontent = file.read()
         byteArr = bytearray(filecontent)
         publish(client, byteArr, topic)
