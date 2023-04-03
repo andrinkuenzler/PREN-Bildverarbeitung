@@ -84,7 +84,7 @@ def object_recognition(client):
 
 # Convert from image to byteArray
 def convert_image_processed(client, topic):
-    with open("./rawImage.jpg",'rb') as file:
+    with open("./images/pet.JPG",'rb') as file:
         filecontent = file.read()
         byteArr = bytearray(filecontent)
         publish(client, byteArr, topic)
