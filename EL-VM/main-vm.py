@@ -49,7 +49,7 @@ def convert_image_raw(client, message):
     f.write(message.payload)
     f.write(message.payload)
     f.close()
-    print ("image received")
+    print ("Raw image saved")
     object_recognition(client)
 
 # Process Image with OpenCV and send to convert_image to publish
@@ -88,7 +88,7 @@ def convert_image_processed(client, topic):
         filecontent = file.read()
         byteArr = bytearray(filecontent)
         publish(client, byteArr, topic)
-    print("Published image (raw)")
+    print("Processed Image published")
 
 # Publish byteArray
 def publish(client, data, topic):
