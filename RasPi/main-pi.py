@@ -23,22 +23,20 @@ def image_capture(client):
     picam.start()
     time.sleep(2)
     while True:
-        picam.capture_file("dummyImage.jpg")
-        print("Saved file (pi)")
-        with open("./dummyImage.jpg",'rb') as file:
+        picam.capture_file("rawImage.jpg")
+        with open("./rawImage.jpg",'rb') as file:
             filecontent = file.read()
             byteArr = bytearray(filecontent)
             publish(client, byteArr, "test/image/raw")
-        print("Published image (raw)")
         time.sleep(5)
 
 def publish(client, data, topic):
     result = client.publish(topic, data, 0)
     status = result[0]
     if status == 0:
-        print("Sent message")
+        print("Pi published image to raw")
     else:
-        print("Failed to send message")
+        print("Pi failed to publish raw image")
 
 def run():
     client = connect_mqtt()

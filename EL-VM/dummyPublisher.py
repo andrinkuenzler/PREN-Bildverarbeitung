@@ -21,16 +21,15 @@ def convert_image(client):
             filecontent = file.read()
             byteArr = bytearray(filecontent)
             publish(client, byteArr, "test/image/raw")
-        print("Published image (raw)")
         time.sleep(5)
 
 def publish(client, data, topic):
     result = client.publish(topic, data, 0)
     status = result[0]
     if status == 0:
-        print("Sent message")
+        print("VM-Dummy published image to raw")
     else:
-        print("Failed to send message")
+        print("VM-Dummy failed to published raw image")
 
 def run():
     client = connect_mqtt()
