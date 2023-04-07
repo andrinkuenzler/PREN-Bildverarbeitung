@@ -6,7 +6,6 @@ import time
 import cv2
 import numpy as np
 from paho.mqtt import client as mqtt_client
-from keras.models import load_model
 from ultralytics import YOLO
 
 
