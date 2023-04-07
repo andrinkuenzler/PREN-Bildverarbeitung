@@ -7,6 +7,11 @@ import cv2
 import numpy as np
 from paho.mqtt import client as mqtt_client
 from keras.models import load_model
+from ultralytics import YOLO
+
+
+model = YOLO('yolov8n.pt')  # load an official model
+model = YOLO("runs/detect/train13/weights/best.pt") #load custom modelmodel = YOLO("runs/detect/train13/weights/best.pt")
 
 def connect_mqtt():
     def on_connect(client, userdata, flags, rc):
@@ -43,29 +48,15 @@ def convert_image_raw(client, message):
 
 # Process Image with OpenCV and send to convert_image to publish
 def object_recognition(client):
-    # Disable scientific notation for clarity
-    np.set_printoptions(suppress=True)
-    # Load the model
-    model = load_model("./converted_keras/keras_model.h5", compile=False)
-    # Load the labels
-    class_names = open("./converted_keras/labels.txt", "r").readlines()
-    # Grab the webcamera's image.
-    image = cv2.imread("./rawImage.jpg")
-    # Resize the raw image into (224-height,224-width) pixels
-    image = cv2.resize(image, (224, 224), interpolation=cv2.INTER_AREA)
-    # Make the image a numpy array and reshape it to the models input shape.
-    image = np.asarray(image, dtype=np.float32).reshape(1, 224, 224, 3)
-    # Normalize the image array
-    image = (image / 127.5) - 1
-    # Predicts the model
-    prediction = model.predict(image)
-    index = np.argmax(prediction)
-    class_name = class_names[index]
-    confidence_score = prediction[0][index]
+    results = model.predict(source = './rawImage.jpg', save=True, conf=0.5) # source already setup
+    detetectObjectName = ""
 
-    print("Class:", class_name[2:], end="")
-    print("Confidence Score:", str(np.round(confidence_score * 100))[:-2], "%")
-    if (np.round(confidence_score * 100) >= 75):
+    for r in results:
+        for c in r.boxes.cls:
+            #print(model.names[int(c)])
+            detetectObjectName = model.names[int(c)]
+
+    if detetectObjectName != "":
         convert_image_processed(client, "test/image/processed/hit")
     else:
         convert_image_processed(client, "test/image/processed/noHit")
@@ -73,7 +64,7 @@ def object_recognition(client):
 
 # Convert from image to byteArray
 def convert_image_processed(client, topic):
-    with open("./rawImage.jpg",'rb') as file:
+    with open("./detect/predict/",'rb') as file:
         filecontent = file.read()
         byteArr = bytearray(filecontent)
         publish(client, byteArr, topic)
