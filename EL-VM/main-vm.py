@@ -52,7 +52,7 @@ def object_recognition(client):
 
     for r in results:
         for c in r.boxes.cls:
-            #print(model.names[int(c)])
+            print("Erkannt: ", model.names[int(c)])
             detetectObjectName = model.names[int(c)]
 
     if detetectObjectName != "":
@@ -63,7 +63,7 @@ def object_recognition(client):
 
 # Convert from image to byteArray
 def convert_image_processed(client, topic):
-    with open("./detect/predict/rawImage.jpg",'rb') as file:
+    with open("./runs/detect/predict/rawImage.jpg",'rb') as file:
         filecontent = file.read()
         byteArr = bytearray(filecontent)
         publish(client, byteArr, topic)
