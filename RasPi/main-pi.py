@@ -23,8 +23,8 @@ def image_capture(client):
     picam.start()
     time.sleep(2)
     while True:
-        picam.capture_file("rawImage.jpg")
-        with open("./rawImage.jpg",'rb') as file:
+        picam.capture_file("/home/pi/PREN-Bildverarbeitung/RasPi/rawImage.jpg")
+        with open("/home/pi/PREN-Bildverarbeitung/RasPi/rawImage.jpg",'rb') as file:
             filecontent = file.read()
             byteArr = bytearray(filecontent)
             publish(client, byteArr, "test/image/raw")

@@ -23,7 +23,7 @@ def image_capture_pi():
     picam.configure(camera_config)
     picam.start()
     time.sleep(2)
-    picam.capture_file("image_pi.jpg")
+    picam.capture_file("/home/pi/PREN-Bildverarbeitung/RasPi/image_pi.jpg")
     print("Saved file (pi)")
 
 def run():
