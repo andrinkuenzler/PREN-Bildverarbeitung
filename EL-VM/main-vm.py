@@ -12,7 +12,7 @@ from ultralytics import YOLO
 
 model = YOLO('yolov8n.pt')  # load an official model
 model = YOLO("/home/localadmin/PREN-Bildverarbeitung/EL-VM/runs/detect/train13/weights/best.pt") #load custom modelmodel = YOLO("runs/detect/train13/weights/best.pt")
-counter = 0
+imgCounter = 0
 
 def connect_mqtt():
     def on_connect(client, userdata, flags, rc):
@@ -36,8 +36,9 @@ def subscribe(client):
 
 def on_message(client, userdata, message):
     print("on_message received")
-    counter += 1
-    tmpCounter = counter
+    global imgCounter
+    imgCounter += 1
+    tmpCounter = imgCounter
     convert_image_raw(client, message, tmpCounter)
 
 # Convert from byteArray to Image
