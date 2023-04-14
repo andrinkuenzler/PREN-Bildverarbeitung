@@ -5,14 +5,12 @@ import random
 import time
 import cv2
 import numpy as np
-import shutil
 from paho.mqtt import client as mqtt_client
 from ultralytics import YOLO
 
 
 model = YOLO('yolov8n.pt')  # load an official model
 model = YOLO("/home/localadmin/PREN-Bildverarbeitung/EL-VM/runs/detect/train13/weights/best.pt") #load custom modelmodel = YOLO("runs/detect/train13/weights/best.pt")
-imgCounter = 0
 
 def connect_mqtt():
     def on_connect(client, userdata, flags, rc):
@@ -36,24 +34,20 @@ def subscribe(client):
 
 def on_message(client, userdata, message):
     print("on_message received")
-    global imgCounter
-    imgCounter += 1
-    tmpCounter = imgCounter
-    convert_image_raw(client, message, tmpCounter)
+    convert_image_raw(client, message)
 
 # Convert from byteArray to Image
-def convert_image_raw(client, message, count):
-    f = open("/home/localadmin/PREN-Bildverarbeitung/EL-VM/rawImage_{}.jpg".format(count), 'wb')
+def convert_image_raw(client, message):
+    f = open("/home/localadmin/PREN-Bildverarbeitung/EL-VM/rawImage.jpg", 'wb')
     f.write(message.payload)
     f.write(message.payload)
     f.close()
     print("Raw image saved")
-    object_recognition(client, count)
+    object_recognition(client)
 
 # Process Image with OpenCV and send to convert_image to publish
-def object_recognition(client, count):
-    shutil.copyfile("/home/localadmin/PREN-Bildverarbeitung/EL-VM/rawImage_{}.jpg".format(count), "/home/localadmin/PREN-Bildverarbeitung/EL-VM/processedImage_{}.jpg".format(count))
-    results = model.predict(source = '/home/localadmin/PREN-Bildverarbeitung/EL-VM/processedImage_{}.jpg".format(count)', save=True, conf=0.5) # source already setup
+def object_recognition(client):
+    results = model.predict(source = '/home/localadmin/PREN-Bildverarbeitung/EL-VM/rawImage.jpg', save=True, conf=0.5) # source already setup
     detetectObjectName = ""
 
     for r in results:
@@ -62,14 +56,14 @@ def object_recognition(client, count):
             detetectObjectName = model.names[int(c)]
 
     if detetectObjectName != "":
-        convert_image_processed(client, count, "test/image/processed/hit")
+        convert_image_processed(client, "test/image/processed/hit")
     else:
-        convert_image_processed(client, count, "test/image/processed/noHit")
+        convert_image_processed(client, "test/image/processed/noHit")
 
 
 # Convert from image to byteArray
-def convert_image_processed(client, count, topic):
-    with open("/home/localadmin/PREN-Bildverarbeitung/EL-VM/processedImage_{}.jpg".format(count),'rb') as file:
+def convert_image_processed(client, topic):
+    with open("/home/localadmin/PREN-Bildverarbeitung/EL-VM/runs/detect/predict/rawImage.jpg",'rb') as file:
         filecontent = file.read()
         byteArr = bytearray(filecontent)
         publish(client, byteArr, topic)
