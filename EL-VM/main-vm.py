@@ -64,11 +64,14 @@ def object_recognition(client):
 
 # Convert from image to byteArray
 def convert_image_processed(client, topic):
-    with open("/home/localadmin/PREN-Bildverarbeitung/EL-VM/runs/detect/predict/rawImage.jpg",'rb') as file:
-        filecontent = file.read()
-        byteArr = bytearray(filecontent)
-        publish(client, byteArr, topic)
-    print("Processed Image published")
+    if (os.path.exists("/home/localadmin/PREN-Bildverarbeitung/EL-VM/runs/detect/predict/")):
+        with open("/home/localadmin/PREN-Bildverarbeitung/EL-VM/runs/detect/predict/rawImage.jpg",'rb') as file:
+            filecontent = file.read()
+            byteArr = bytearray(filecontent)
+            publish(client, byteArr, topic)
+            print("Processed Image published")
+    else:
+        print("dir not existing")
 
 # Publish byteArray
 def publish(client, data, topic):
