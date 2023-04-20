@@ -80,9 +80,10 @@ def publish(client, data, topic):
         print("Failed to send message")
 
 def run():
+    if (os.path.exists("/home/localadmin/PREN-Bildverarbeitung/EL-VM/runs/detect/predict/")):
+        shutil.rmtree("/home/localadmin/PREN-Bildverarbeitung/EL-VM/runs/detect/predict/")
     client = connect_mqtt()
     subscribe(client)
-    shutil.rmtree("/home/localadmin/PREN-Bildverarbeitung/EL-VM/runs/detect/predict/")
     client.loop_forever()
 
 if __name__ == '__main__':
