@@ -3,6 +3,8 @@
 
 import random
 import time
+import shutil
+import os
 import cv2
 import numpy as np
 from paho.mqtt import client as mqtt_client
@@ -39,7 +41,6 @@ def on_message(client, userdata, message):
 # Convert from byteArray to Image
 def convert_image_raw(client, message):
     f = open("/home/localadmin/PREN-Bildverarbeitung/EL-VM/rawImage.jpg", 'wb')
-    f.write(message.payload)
     f.write(message.payload)
     f.close()
     print("Raw image saved")
@@ -81,6 +82,7 @@ def publish(client, data, topic):
 def run():
     client = connect_mqtt()
     subscribe(client)
+    shutil.rmtree("/home/localadmin/PREN-Bildverarbeitung/EL-VM/runs/detect/predict/")
     client.loop_forever()
 
 if __name__ == '__main__':
