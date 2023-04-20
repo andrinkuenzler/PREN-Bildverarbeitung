@@ -4,6 +4,7 @@
 import time
 import shutil # added counter
 import os # added counter
+import glob # added counter
 from paho.mqtt import client as mqtt_client
 from picamera2 import Picamera2
 
@@ -45,8 +46,8 @@ def publish(client, data, topic):
         print("Pi failed to publish raw image")
 
 def run():
-    if (os.path.exists("/home/pi/PREN-Bildverarbeitung/RasPi/rawImage-*.jpg")): # added counter
-        shutil.rmtree("/home/pi/PREN-Bildverarbeitung/RasPi/rawImage-*.jpg") # added counter
+    for filename in glob.glob("/home/pi/PREN-Bildverarbeitung/RasPi/rawImage-*.jpg"): # added counter
+        os.remove(filename) # added counter
     client = connect_mqtt()
     client.loop_start()
     image_capture(client)

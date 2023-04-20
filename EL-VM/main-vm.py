@@ -6,6 +6,7 @@ import time
 import shutil
 import os
 import cv2
+import glob # added counter
 import numpy as np
 from paho.mqtt import client as mqtt_client
 from ultralytics import YOLO
@@ -67,7 +68,7 @@ def object_recognition(client, counter): # added counter
 # Convert from image to byteArray
 def convert_image_processed(client, topic, counter): # added counter
     if (os.path.exists("/home/localadmin/PREN-Bildverarbeitung/EL-VM/runs/detect/predict/")):
-        with open("/home/localadmin/PREN-Bildverarbeitung/EL-VM/runs/detect/predict/rawImage-{}.jpg".format(counter),'rb') as file:
+        with open("/home/localadmin/PREN-Bildverarbeitung/EL-VM/runs/detect/predict/rawImage-{}.jpg".format(counter),'rb') as file: # added counter
             filecontent = file.read()
             byteArr = bytearray(filecontent)
             publish(client, byteArr, topic)
@@ -87,8 +88,8 @@ def publish(client, data, topic):
 def run():
     if (os.path.exists("/home/localadmin/PREN-Bildverarbeitung/EL-VM/runs/detect/predict/")):
         shutil.rmtree("/home/localadmin/PREN-Bildverarbeitung/EL-VM/runs/detect/predict/")
-    if (os.path.exists("/home/localadmin/PREN-Bildverarbeitung/EL-VM/runs/detect/predict/rawImage-*.jpg")): # added counter
-        shutil.rmtree("/home/localadmin/PREN-Bildverarbeitung/EL-VM/runs/detect/predict/rawImage-*.jpg") # added counter
+    for filename in glob.glob("/home/localadmin/PREN-Bildverarbeitung/EL-VM/runs/detect/predict/rawImage-*.jpg"): # added counter
+        os.remove(filename) # added counter
     client = connect_mqtt()
     subscribe(client)
     client.loop_forever()
