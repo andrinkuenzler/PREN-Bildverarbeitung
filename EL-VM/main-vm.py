@@ -48,7 +48,7 @@ def convert_image_raw(client, message):
 
 # Process Image with OpenCV and send to convert_image to publish
 def object_recognition(client):
-    results = model.predict(source = '/home/localadmin/PREN-Bildverarbeitung/EL-VM/rawImage.jpg', save=True, conf=0.5) # source already setup
+    results = model.predict(source ='/home/localadmin/PREN-Bildverarbeitung/EL-VM/rawImage.jpg', save=True, conf=0.5, project="/home/localadmin/PREN-Bildverarbeitung/EL-VM/runs/detect") # source already setup
     detetectObjectName = ""
 
     for r in results:
