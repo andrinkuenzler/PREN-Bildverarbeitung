@@ -88,7 +88,7 @@ def publish(client, data, topic):
 def run():
     if (os.path.exists("/home/localadmin/PREN-Bildverarbeitung/EL-VM/runs/detect/predict/")):
         shutil.rmtree("/home/localadmin/PREN-Bildverarbeitung/EL-VM/runs/detect/predict/")
-    for filename in glob.glob("/home/localadmin/PREN-Bildverarbeitung/EL-VM/runs/detect/predict/rawImage-*.jpg"): # added counter
+    for filename in glob.glob("/home/localadmin/PREN-Bildverarbeitung/EL-VM/rawImage-*.jpg"): # added counter
         os.remove(filename) # added counter
     client = connect_mqtt()
     subscribe(client)

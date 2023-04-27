@@ -8,7 +8,7 @@ import glob # added counter
 from paho.mqtt import client as mqtt_client
 from picamera2 import Picamera2
 
-counter = 0
+counter = 1 # added counter
 
 def connect_mqtt():
     def on_connect(client, userdata, flags, rc):
