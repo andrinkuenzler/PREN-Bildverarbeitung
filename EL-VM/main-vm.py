@@ -12,7 +12,7 @@ from paho.mqtt import client as mqtt_client
 from ultralytics import YOLO
 
 model = YOLO('yolov8n.pt')  # load an official model
-model = YOLO("/home/localadmin/PREN-Bildverarbeitung/EL-VM/runs/detect/train13/weights/best.pt") #load custom modelmodel = YOLO("runs/detect/train13/weights/best.pt")
+model = YOLO("/home/localadmin/PREN-Bildverarbeitung/EL-VM/runs/detect/train17-best/weights/best.pt") #load custom modelmodel = YOLO("runs/detect/train13/weights/best.pt")
 counter = 1
 
 def connect_mqtt():
