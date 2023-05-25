@@ -35,7 +35,7 @@ def image_capture(client):
             byteArr = bytearray(filecontent)
             publish(client, byteArr, "test/image/raw")
         counter += 1
-        time.sleep(1) #Image capture intervall
+        time.sleep(2) #Image capture intervall
 
 def publish(client, data, topic):
     result = client.publish(topic, data, 0)
